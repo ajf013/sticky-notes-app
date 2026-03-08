@@ -152,6 +152,21 @@ const Note = ({ id, title, text, date, handleDeleteNote, handleEditNote, handleR
 		);
 	}
 
+	const handleCopyNoteText = (e) => {
+		e.stopPropagation();
+
+		// Create a temporary element to strip HTML tags for clean copying
+		const tempDiv = document.createElement("div");
+		tempDiv.innerHTML = text;
+		const cleanText = title
+			? `${title}\n\n${tempDiv.textContent || tempDiv.innerText}`
+			: tempDiv.textContent || tempDiv.innerText;
+
+		navigator.clipboard.writeText(cleanText)
+			.then(() => alert('Note copied to clipboard!'))
+			.catch(() => alert('Failed to copy note.'));
+	};
+
 	return (
 		<div className='note' onClick={() => handleReadNote({ id, title, text, date })} style={{ cursor: 'pointer' }} data-aos='fade-up'>
 			{title && <h3 style={{ marginBottom: '10px', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '5px' }}>{title}</h3>}
@@ -195,6 +210,12 @@ const Note = ({ id, title, text, date, handleDeleteNote, handleEditNote, handleR
 							</div>
 						</div>
 					)}
+					<FaCopy
+						onClick={handleCopyNoteText}
+						className='delete-icon'
+						size='1.1em'
+						title="Copy Note Text"
+					/>
 					<MdShare
 						onClick={(e) => {
 							e.stopPropagation();
@@ -202,6 +223,7 @@ const Note = ({ id, title, text, date, handleDeleteNote, handleEditNote, handleR
 						}}
 						className='delete-icon'
 						size='1.3em'
+						title="Share Note"
 					/>
 					<MdEdit
 						onClick={(e) => {
@@ -210,6 +232,7 @@ const Note = ({ id, title, text, date, handleDeleteNote, handleEditNote, handleR
 						}}
 						className='delete-icon'
 						size='1.3em'
+						title="Edit Note"
 					/>
 					<MdDeleteForever
 						onClick={(e) => {
@@ -218,6 +241,7 @@ const Note = ({ id, title, text, date, handleDeleteNote, handleEditNote, handleR
 						}}
 						className='delete-icon'
 						size='1.3em'
+						title="Delete Note"
 					/>
 				</div>
 			</div>
