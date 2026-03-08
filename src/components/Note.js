@@ -16,7 +16,12 @@ const Note = ({ id, title, text, date, handleDeleteNote, handleEditNote, handleR
 
 	const createMarkup = (html) => {
 		return {
-			__html: DOMPurify.sanitize(html)
+			__html: DOMPurify.sanitize(html, {
+				ADD_CLASSES: {
+					'*': ['ql-syntax', 'ql-clipboard']
+				},
+				ADD_ATTR: ['spellcheck', 'data-language', 'class']
+			})
 		}
 	}
 
