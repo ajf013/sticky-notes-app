@@ -49,7 +49,7 @@ const AuthHeader = styled.div`
     font-size: 2.2rem;
     font-weight: 800;
     margin-bottom: 0.5rem;
-    color: #a937cc48;
+    color: #ede0f1e5;
     text-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
 
