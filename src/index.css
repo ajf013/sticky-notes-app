@@ -82,13 +82,35 @@ textarea:focus {
 	background-color: #fe8ace;
 	border-radius: 10px;
 	padding: 1rem;
-	min-height: 170px;
+	min-height: 250px;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
 	white-space: pre-wrap;
 	transition: transform 0.3s ease, box-shadow 0.3s ease;
 	animation: fadeIn 0.5s ease-in-out;
+}
+
+.note.new {
+	min-height: 350px;
+}
+
+.note .ql-container {
+	flex: 1;
+	overflow-y: auto;
+	font-family: inherit;
+	min-height: 120px;
+}
+
+.note .ql-editor {
+	min-height: 120px;
+	height: 100%;
+}
+
+.note .ql-toolbar {
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+	background: rgba(255, 255, 255, 0.5);
 }
 
 .note:hover {

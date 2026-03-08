@@ -65,9 +65,14 @@ const AddNote = ({ handleAddNote }) => {
 				modules={modules}
 				formats={formats}
 				placeholder='Type to add a note...'
-				style={{ height: '150px', marginBottom: '40px' }}
+				style={{
+					flex: 1,
+					display: 'flex',
+					flexDirection: 'column',
+					marginBottom: '10px'
+				}}
 			/>
-			<div className='note-footer'>
+			<div className='note-footer' style={{ marginTop: 'auto', paddingTop: '10px' }}>
 				<button className='save' onClick={handleSaveClick}>
 					Save
 				</button>
