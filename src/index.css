@@ -24,6 +24,11 @@ code {
 	color: white;
 }
 
+.dark-mode .note.new {
+	background-color: #b7b7d4;
+	/* Darker lavender for dark mode */
+}
+
 .container {
 	max-width: 960px;
 	margin-right: auto;
@@ -53,13 +58,16 @@ code {
 }
 
 .note.new {
-	background-color: #67d7cc;
+	background-color: #e6e6fa;
+	/* Lavender */
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	min-height: 350px;
 }
 
 textarea {
 	border: none;
 	resize: none;
-	background-color: #67d7cc;
+	background-color: #e6e6fa;
 }
 
 textarea:focus {
