@@ -63,14 +63,32 @@ const App = () => {
 				.order('date', { ascending: false });
 
 			if (error) throw error;
-			if (data) setNotes(data);
+			if (data) {
+				const mappedData = data.map(note => {
+					// Retroactively add time to older notes that only saved the date string
+					if (note.date && !note.date.includes(':') && note.created_at) {
+						note.date = new Date(note.created_at).toLocaleString([], {
+							year: 'numeric', month: 'numeric', day: 'numeric',
+							hour: '2-digit', minute: '2-digit'
+						});
+					}
+					return note;
+				});
+				setNotes(mappedData);
+			}
 		} catch (error) {
 			console.error("Error fetching notes: ", error.message);
 		}
 	};
 
 	const addNote = async (title, text) => {
-		const date = new Date().toLocaleDateString();
+		const date = new Date().toLocaleString([], {
+			year: 'numeric',
+			month: 'numeric',
+			day: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit'
+		});
 		try {
 			const { data, error } = await supabase
 				.from('notes')
