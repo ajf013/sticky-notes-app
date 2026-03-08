@@ -66,14 +66,19 @@ const AddNote = ({ handleAddNote }) => {
 				formats={formats}
 				placeholder='Type to add a note...'
 				style={{
-					flex: 1,
+					height: '200px',
 					display: 'flex',
 					flexDirection: 'column',
 					marginBottom: '10px'
 				}}
 			/>
-			<div className='note-footer' style={{ marginTop: 'auto', paddingTop: '10px' }}>
-				<button className='save' onClick={handleSaveClick}>
+			<div className='note-footer' style={{ marginTop: 'auto', paddingTop: '10px', touchAction: 'manipulation' }}>
+				<button
+					className='save'
+					onClick={handleSaveClick}
+					onMouseDown={(e) => { e.preventDefault(); handleSaveClick(); }}
+					onTouchStart={(e) => { e.preventDefault(); handleSaveClick(); }}
+				>
 					Save
 				</button>
 			</div>
