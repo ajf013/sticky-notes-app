@@ -13,6 +13,7 @@ import { Modal, Button } from 'semantic-ui-react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import DOMPurify from 'dompurify';
+import SplashScreen from './components/SplashScreen';
 
 const Container = styled.div`
   max-width: 50%;
@@ -20,6 +21,7 @@ const Container = styled.div`
 `;
 
 const App = () => {
+	const [showSplash, setShowSplash] = useState(true);
 	const [session, setSession] = useState(null);
 	const [notes, setNotes] = useState([]);
 	const [searchText, setSearchText] = useState('');
@@ -99,53 +101,57 @@ const App = () => {
 	return (
 		<ThemeProvider theme={themeMode}>
 			<GlobalStyles />
-			<div className='container'>
-				{!session ? (
-					<Auth />
-				) : (
-					<>
-						<Header session={session} />
-						<Search handleSearchNote={setSearchText} />
-						<NotesList
-							notes={notes.filter((note) =>
-								note.text.toLowerCase().includes(searchText) ||
-								(note.title && note.title.toLowerCase().includes(searchText))
-							)}
-							handleAddNote={addNote}
-							handleDeleteNote={deleteNote}
-							handleReadNote={setSelectedNote}
-						/>
-						<Modal
-							open={!!selectedNote}
-							onClose={() => setSelectedNote(null)}
-							closeIcon
-						>
-							<Modal.Header>{selectedNote?.title || 'Note Details'}</Modal.Header>
-							<Modal.Content scrolling>
-								<Modal.Description>
-									{selectedNote?.title && <h3 style={{ marginBottom: '1rem' }}>{selectedNote.title}</h3>}
-									<div
-										dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selectedNote?.text) }}
-										style={{ fontSize: '1.2rem', lineHeight: '1.5' }}
-									/>
-									<p style={{ color: 'gray', marginTop: '1rem' }}>
-										Date: {selectedNote?.date}
-									</p>
-								</Modal.Description>
-							</Modal.Content>
-							<Modal.Actions>
-								<Button onClick={() => setSelectedNote(null)} primary>
-									Close
-								</Button>
-							</Modal.Actions>
-						</Modal>
-						<Container>
-							<Toggle theme={theme} toggleTheme={toggleTheme} />
-						</Container>
-					</>
-				)}
-				<Footer />
-			</div>
+			{showSplash ? (
+				<SplashScreen onComplete={() => setShowSplash(false)} theme={theme} />
+			) : (
+				<div className='container'>
+					{!session ? (
+						<Auth />
+					) : (
+						<>
+							<Header session={session} />
+							<Search handleSearchNote={setSearchText} />
+							<NotesList
+								notes={notes.filter((note) =>
+									note.text.toLowerCase().includes(searchText) ||
+									(note.title && note.title.toLowerCase().includes(searchText))
+								)}
+								handleAddNote={addNote}
+								handleDeleteNote={deleteNote}
+								handleReadNote={setSelectedNote}
+							/>
+							<Modal
+								open={!!selectedNote}
+								onClose={() => setSelectedNote(null)}
+								closeIcon
+							>
+								<Modal.Header>{selectedNote?.title || 'Note Details'}</Modal.Header>
+								<Modal.Content scrolling>
+									<Modal.Description>
+										{selectedNote?.title && <h3 style={{ marginBottom: '1rem' }}>{selectedNote.title}</h3>}
+										<div
+											dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selectedNote?.text) }}
+											style={{ fontSize: '1.2rem', lineHeight: '1.5' }}
+										/>
+										<p style={{ color: 'gray', marginTop: '1rem' }}>
+											Date: {selectedNote?.date}
+										</p>
+									</Modal.Description>
+								</Modal.Content>
+								<Modal.Actions>
+									<Button onClick={() => setSelectedNote(null)} primary>
+										Close
+									</Button>
+								</Modal.Actions>
+							</Modal>
+							<Container>
+								<Toggle theme={theme} toggleTheme={toggleTheme} />
+							</Container>
+						</>
+					)}
+					<Footer />
+				</div>
+			)}
 		</ThemeProvider>
 	);
 };

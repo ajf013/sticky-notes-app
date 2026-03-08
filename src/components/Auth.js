@@ -26,6 +26,10 @@ const AuthWrapper = styled.div`
   align-items: center;
   min-height: calc(100vh - 200px); /* Adjust based on header/footer */
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  
+  @media (max-width: 768px) {
+    margin-top: 4rem;
+  }
 `;
 
 const AuthCard = styled.div`
