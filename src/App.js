@@ -65,9 +65,19 @@ const App = () => {
 			if (error) throw error;
 			if (data) {
 				const mappedData = data.map(note => {
-					// Retroactively add time to older notes that only saved the date string
-					if (note.date && !note.date.includes(':') && note.created_at) {
-						note.date = new Date(note.created_at).toLocaleString([], {
+					// Check for auto-generated Supabase creation timestamps
+					const creationTime = note.created_at || note.inserted_at;
+
+					// If the saved date string is just a date (no time), and the DB has the true creation time:
+					if (creationTime && note.date && !note.date.includes(':')) {
+						note.date = new Date(creationTime).toLocaleString([], {
+							year: 'numeric', month: 'numeric', day: 'numeric',
+							hour: '2-digit', minute: '2-digit'
+						});
+					}
+					// Alternatively, if note.date IS a Postgres timestamp like "2026-03-08T12:00:00Z"
+					else if (note.date && note.date.includes('T') && note.date.includes('Z')) {
+						note.date = new Date(note.date).toLocaleString([], {
 							year: 'numeric', month: 'numeric', day: 'numeric',
 							hour: '2-digit', minute: '2-digit'
 						});
