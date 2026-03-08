@@ -243,7 +243,7 @@ export default function Auth() {
     <AuthWrapper>
       <AuthCard>
         <AuthHeader>
-          <h1>Notes App | React</h1>
+          <h1>Sticky Notes App</h1>
           <div className="animated-icon">
             <Icon name='sticky note' size='huge' style={{ color: '#fff' }} />
           </div>
