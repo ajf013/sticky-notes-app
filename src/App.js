@@ -140,14 +140,15 @@ const App = () => {
 								open={!!selectedNote}
 								onClose={() => setSelectedNote(null)}
 								closeIcon
+								style={{ color: 'black' }}
 							>
-								<Modal.Header>{selectedNote?.title || 'Note Details'}</Modal.Header>
+								<Modal.Header style={{ color: 'black' }}>{selectedNote?.title || 'Note Details'}</Modal.Header>
 								<Modal.Content scrolling>
-									<Modal.Description>
-										{selectedNote?.title && <h3 style={{ marginBottom: '1rem' }}>{selectedNote.title}</h3>}
+									<Modal.Description style={{ color: 'black' }}>
+										{selectedNote?.title && <h3 style={{ marginBottom: '1rem', color: 'black' }}>{selectedNote.title}</h3>}
 										<div
 											dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selectedNote?.text) }}
-											style={{ fontSize: '1.2rem', lineHeight: '1.5' }}
+											style={{ fontSize: '1.2rem', lineHeight: '1.5', color: 'black' }}
 										/>
 										<p style={{ color: 'gray', marginTop: '1rem' }}>
 											Date: {selectedNote?.date}
