@@ -15,7 +15,16 @@ const AddNote = ({ handleAddNote }) => {
 	};
 
 	const handleSaveClick = () => {
-		if (noteText.trim().length > 0) {
+		// Strip HTML to check if there is actual text, not just empty ReactQuill formatting
+		let isTextEmpty = true;
+		if (noteText) {
+			const tempDiv = document.createElement("div");
+			tempDiv.innerHTML = noteText;
+			const cleanText = tempDiv.textContent || tempDiv.innerText || "";
+			isTextEmpty = cleanText.trim().length === 0;
+		}
+
+		if (!isTextEmpty || noteTitle.trim().length > 0) {
 			handleAddNote(noteTitle, noteText);
 			setNoteText('');
 			setNoteTitle('');
