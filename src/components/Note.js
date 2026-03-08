@@ -75,7 +75,16 @@ const Note = ({ id, title, text, date, handleDeleteNote, handleEditNote, handleR
 
 	const handleSaveEdit = (e) => {
 		e?.stopPropagation();
-		if (editText.trim().length > 0) {
+
+		let isTextEmpty = true;
+		if (editText) {
+			const tempDiv = document.createElement("div");
+			tempDiv.innerHTML = editText;
+			const cleanText = tempDiv.textContent || tempDiv.innerText || "";
+			isTextEmpty = cleanText.trim().length === 0;
+		}
+
+		if (!isTextEmpty || (editTitle && editTitle.trim().length > 0)) {
 			handleEditNote(id, editTitle, editText);
 			setIsEditing(false);
 		}
@@ -115,7 +124,8 @@ const Note = ({ id, title, text, date, handleDeleteNote, handleEditNote, handleR
 						padding: '5px',
 						fontSize: '1.1em',
 						fontWeight: 'bold',
-						outline: 'none'
+						outline: 'none',
+						color: '#000'
 					}}
 				/>
 				<ReactQuill
@@ -228,6 +238,8 @@ const Note = ({ id, title, text, date, handleDeleteNote, handleEditNote, handleR
 					<MdEdit
 						onClick={(e) => {
 							e.stopPropagation();
+							setEditTitle(title || '');
+							setEditText(text || '');
 							setIsEditing(true);
 						}}
 						className='delete-icon'
