@@ -97,7 +97,22 @@ const App = () => {
 		}
 	};
 
+	const editNote = async (id, newTitle, newText) => {
+		try {
+			const { data, error } = await supabase
+				.from('notes')
+				.update({ title: newTitle, text: newText })
+				.eq('id', id)
+				.select();
 
+			if (error) throw error;
+			if (data && data.length > 0) {
+				setNotes(notes.map(note => note.id === id ? data[0] : note));
+			}
+		} catch (error) {
+			console.error("Error editing note: ", error.message);
+		}
+	};
 	return (
 		<ThemeProvider theme={themeMode}>
 			<GlobalStyles />
@@ -118,6 +133,7 @@ const App = () => {
 								)}
 								handleAddNote={addNote}
 								handleDeleteNote={deleteNote}
+								handleEditNote={editNote}
 								handleReadNote={setSelectedNote}
 							/>
 							<Modal

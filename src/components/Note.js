@@ -1,12 +1,17 @@
-import { MdDeleteForever, MdShare } from 'react-icons/md';
+import { MdDeleteForever, MdShare, MdEdit } from 'react-icons/md';
 import DOMPurify from 'dompurify';
 import { Button } from 'semantic-ui-react';
 import { useState, useRef, useEffect } from 'react';
 import { FaWhatsapp, FaFacebook, FaInstagram, FaShareAlt, FaCopy } from 'react-icons/fa';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
-const Note = ({ id, title, text, date, handleDeleteNote, handleReadNote }) => {
+const Note = ({ id, title, text, date, handleDeleteNote, handleEditNote, handleReadNote }) => {
 	const [showShare, setShowShare] = useState(false);
 	const [access, setAccess] = useState('view');
+	const [isEditing, setIsEditing] = useState(false);
+	const [editTitle, setEditTitle] = useState(title || '');
+	const [editText, setEditText] = useState(text || '');
 	const shareRef = useRef(null);
 
 	const createMarkup = (html) => {
@@ -68,6 +73,85 @@ const Note = ({ id, title, text, date, handleDeleteNote, handleReadNote }) => {
 		};
 	}, []);
 
+	const handleSaveEdit = (e) => {
+		e?.stopPropagation();
+		if (editText.trim().length > 0) {
+			handleEditNote(id, editTitle, editText);
+			setIsEditing(false);
+		}
+	};
+
+	const modules = {
+		toolbar: [
+			[{ 'header': [1, 2, false] }],
+			['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
+			[{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+			['link', 'image'],
+			['clean']
+		],
+	};
+
+	const formats = [
+		'header',
+		'bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block',
+		'list', 'bullet', 'indent',
+		'link', 'image'
+	];
+
+	if (isEditing) {
+		return (
+			<div className='note new' onClick={(e) => e.stopPropagation()}>
+				<input
+					type='text'
+					placeholder='Title (optional)...'
+					value={editTitle}
+					onChange={(e) => setEditTitle(e.target.value)}
+					style={{
+						backgroundColor: 'transparent',
+						border: 'none',
+						borderBottom: '1px solid rgba(0,0,0,0.1)',
+						width: '100%',
+						marginBottom: '10px',
+						padding: '5px',
+						fontSize: '1.1em',
+						fontWeight: 'bold',
+						outline: 'none'
+					}}
+				/>
+				<ReactQuill
+					theme="snow"
+					value={editText}
+					onChange={setEditText}
+					modules={modules}
+					formats={formats}
+					style={{
+						height: '200px',
+						display: 'flex',
+						flexDirection: 'column',
+						marginBottom: '10px'
+					}}
+				/>
+				<div className='note-footer' style={{ marginTop: 'auto', paddingTop: '10px', touchAction: 'manipulation', justifyContent: 'flex-end', gap: '10px' }}>
+					<button
+						className='save'
+						onClick={(e) => { e.stopPropagation(); setIsEditing(false); }}
+						style={{ backgroundColor: '#ffcccb' }}
+					>
+						Cancel
+					</button>
+					<button
+						className='save'
+						onClick={handleSaveEdit}
+						onMouseDown={(e) => { e.preventDefault(); handleSaveEdit(e); }}
+						onTouchStart={(e) => { e.preventDefault(); handleSaveEdit(e); }}
+					>
+						Save
+					</button>
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div className='note' onClick={() => handleReadNote({ id, title, text, date })} style={{ cursor: 'pointer' }} data-aos='fade-up'>
 			{title && <h3 style={{ marginBottom: '10px', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '5px' }}>{title}</h3>}
@@ -115,6 +199,14 @@ const Note = ({ id, title, text, date, handleDeleteNote, handleReadNote }) => {
 						onClick={(e) => {
 							e.stopPropagation();
 							setShowShare(!showShare);
+						}}
+						className='delete-icon'
+						size='1.3em'
+					/>
+					<MdEdit
+						onClick={(e) => {
+							e.stopPropagation();
+							setIsEditing(true);
 						}}
 						className='delete-icon'
 						size='1.3em'
