@@ -166,6 +166,18 @@ textarea:focus {
 	margin: 10px 0;
 }
 
+/* Code Block Styling */
+.note pre {
+	background-color: #282c34;
+	color: #abb2bf;
+	padding: 10px;
+	border-radius: 6px;
+	overflow-x: auto;
+	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+	font-size: 0.9em;
+	margin: 10px 0;
+}
+
 .note table td,
 .note table th {
 	border: 1px solid #ccc;
