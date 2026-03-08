@@ -62,6 +62,18 @@ code {
 	/* Lavender */
 	border: 1px solid rgba(0, 0, 0, 0.05);
 	min-height: 350px;
+	color: #000;
+}
+
+.note.new input,
+.note.new .ql-editor {
+	color: #000 !important;
+}
+
+.note.new input::placeholder,
+.note.new .ql-editor.ql-blank::before {
+	color: rgba(0, 0, 0, 0.6) !important;
+	font-style: normal;
 }
 
 textarea {
