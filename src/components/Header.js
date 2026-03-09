@@ -14,9 +14,12 @@ const Header = ({ session }) => {
 		<div className='header' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 			<h1>Sticky Notes</h1>
 			{session && (
-				<Button color="red" onClick={handleLogout}>
-					Logout
-				</Button>
+				<div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+					<span style={{ fontWeight: 'bold' }}>{session.user.email}</span>
+					<Button color="red" onClick={handleLogout}>
+						Logout
+					</Button>
+				</div>
 			)}
 		</div>
 	);
