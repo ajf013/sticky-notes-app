@@ -99,7 +99,8 @@ textarea:focus {
 }
 
 .note {
-	background-color: #fe8ace;
+	background-color: #dda0dd;
+	/* Plum/Violet */
 	border-radius: 10px;
 	padding: 1rem;
 	min-height: 250px;
