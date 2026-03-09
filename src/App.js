@@ -63,6 +63,7 @@ const App = () => {
 			const { data, error } = await supabase
 				.from('notes')
 				.select('*')
+				.eq('user_id', session.user.id)
 				.order('date', { ascending: false });
 
 			if (error) throw error;
