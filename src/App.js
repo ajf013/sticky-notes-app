@@ -14,6 +14,8 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import DOMPurify from 'dompurify';
 import SplashScreen from './components/SplashScreen';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import SharedNote from './components/SharedNote';
 
 const Container = styled.div`
   max-width: 50%;
@@ -144,64 +146,73 @@ const App = () => {
 	return (
 		<ThemeProvider theme={themeMode}>
 			<GlobalStyles />
-			{showSplash ? (
-				<SplashScreen onComplete={() => setShowSplash(false)} theme={theme} />
-			) : (
-				<div className='container'>
-					{!session ? (
-						<Auth />
-					) : (
-						<>
-							<Header session={session} />
-							<Search handleSearchNote={setSearchText} />
-							<NotesList
-								notes={notes.filter((note) =>
-									note.text.toLowerCase().includes(searchText) ||
-									(note.title && note.title.toLowerCase().includes(searchText))
-								)}
-								handleAddNote={addNote}
-								handleDeleteNote={deleteNote}
-								handleEditNote={editNote}
-								handleReadNote={setSelectedNote}
-							/>
-							<Modal
-								open={!!selectedNote}
-								onClose={() => setSelectedNote(null)}
-								closeIcon
-								style={{ color: 'black' }}
-							>
-								<Modal.Header style={{ color: 'black' }}>{selectedNote?.title || 'Note Details'}</Modal.Header>
-								<Modal.Content scrolling>
-									<Modal.Description style={{ color: 'black' }}>
-										{selectedNote?.title && <h3 style={{ marginBottom: '1rem', color: 'black' }}>{selectedNote.title}</h3>}
-										<div
-											dangerouslySetInnerHTML={{
-												__html: DOMPurify.sanitize(selectedNote?.text, {
-													ADD_CLASSES: { '*': ['ql-syntax', 'ql-clipboard'] },
-													ADD_ATTR: ['spellcheck', 'data-language', 'class']
-												})
-											}}
-											style={{ fontSize: '1.2rem', lineHeight: '1.5', color: 'black' }}
+			<Router>
+				{showSplash ? (
+					<SplashScreen onComplete={() => setShowSplash(false)} theme={theme} />
+				) : (
+					<div className='container'>
+						<Switch>
+							<Route exact path="/note/:id">
+								<SharedNote />
+							</Route>
+							<Route path="/">
+								{!session ? (
+									<Auth />
+								) : (
+									<>
+										<Header session={session} />
+										<Search handleSearchNote={setSearchText} />
+										<NotesList
+											notes={notes.filter((note) =>
+												note.text.toLowerCase().includes(searchText) ||
+												(note.title && note.title.toLowerCase().includes(searchText))
+											)}
+											handleAddNote={addNote}
+											handleDeleteNote={deleteNote}
+											handleEditNote={editNote}
+											handleReadNote={setSelectedNote}
 										/>
-										<p style={{ color: 'gray', marginTop: '1rem' }}>
-											Date: {selectedNote?.date}
-										</p>
-									</Modal.Description>
-								</Modal.Content>
-								<Modal.Actions>
-									<Button onClick={() => setSelectedNote(null)} primary>
-										Close
-									</Button>
-								</Modal.Actions>
-							</Modal>
-							<Container>
-								<Toggle theme={theme} toggleTheme={toggleTheme} />
-							</Container>
-						</>
-					)}
-					<Footer />
-				</div>
-			)}
+										<Modal
+											open={!!selectedNote}
+											onClose={() => setSelectedNote(null)}
+											closeIcon
+											style={{ color: 'black' }}
+										>
+											<Modal.Header style={{ color: 'black' }}>{selectedNote?.title || 'Note Details'}</Modal.Header>
+											<Modal.Content scrolling>
+												<Modal.Description style={{ color: 'black' }}>
+													{selectedNote?.title && <h3 style={{ marginBottom: '1rem', color: 'black' }}>{selectedNote.title}</h3>}
+													<div
+														dangerouslySetInnerHTML={{
+															__html: DOMPurify.sanitize(selectedNote?.text, {
+																ADD_CLASSES: { '*': ['ql-syntax', 'ql-clipboard'] },
+																ADD_ATTR: ['spellcheck', 'data-language', 'class']
+															})
+														}}
+														style={{ fontSize: '1.2rem', lineHeight: '1.5', color: 'black' }}
+													/>
+													<p style={{ color: 'gray', marginTop: '1rem' }}>
+														Date: {selectedNote?.date}
+													</p>
+												</Modal.Description>
+											</Modal.Content>
+											<Modal.Actions>
+												<Button onClick={() => setSelectedNote(null)} primary>
+													Close
+												</Button>
+											</Modal.Actions>
+										</Modal>
+										<Container>
+											<Toggle theme={theme} toggleTheme={toggleTheme} />
+										</Container>
+									</>
+								)}
+							</Route>
+						</Switch>
+						<Footer />
+					</div>
+				)}
+			</Router>
 		</ThemeProvider>
 	);
 };
