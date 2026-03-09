@@ -64,17 +64,26 @@ const App = () => {
 					// Use the auto-generated Supabase timestamp if available, fallback to the manual 'date' string
 					const timestampStr = note.created_at || note.inserted_at || note.date;
 
-					if (timestampStr) {
-						// Parse the timestamp and convert to the user's local timezone
+					// If the timestamp is a standard ISO string, we format it locally.
+					// If it's an older layout string (like "8/3/2026, 15:30"), we leave it untouched
+					// because Date.parse() handles localized numeric strings inconsistently across browsers.
+					if (timestampStr && (timestampStr.includes('T') || timestampStr.includes('-'))) {
 						const localDate = new Date(timestampStr);
-						note.date = localDate.toLocaleString([], {
-							year: 'numeric',
-							month: 'short',
-							day: 'numeric',
-							hour: '2-digit',
-							minute: '2-digit'
-						});
+						if (!isNaN(localDate)) {
+							note.date = localDate.toLocaleString([], {
+								year: 'numeric',
+								month: 'short',
+								day: 'numeric',
+								hour: '2-digit',
+								minute: '2-digit'
+							});
+						} else {
+							note.date = note.date || timestampStr;
+						}
+					} else {
+						note.date = note.date || timestampStr;
 					}
+
 					return note;
 				});
 				setNotes(mappedData);
