@@ -16,6 +16,7 @@ import DOMPurify from 'dompurify';
 import SplashScreen from './components/SplashScreen';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import SharedNote from './components/SharedNote';
+import PendingRequests from './components/PendingRequests';
 
 const Container = styled.div`
   max-width: 50%;
@@ -162,6 +163,7 @@ const App = () => {
 									<>
 										<Header session={session} />
 										<Search handleSearchNote={setSearchText} />
+										<PendingRequests session={session} />
 										<NotesList
 											notes={notes.filter((note) =>
 												note.text.toLowerCase().includes(searchText) ||
