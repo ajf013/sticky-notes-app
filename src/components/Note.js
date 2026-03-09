@@ -25,7 +25,7 @@ const Note = ({ id, title, text, date, handleDeleteNote, handleEditNote, handleR
 		}
 	}
 
-	const shareUrl = `${window.location.origin}/note/${id}?access=${access}`;
+	const shareUrl = `https://notes.fcruz.org/note/${id}?access=${access}`;
 
 	const handleCopyLink = () => {
 		navigator.clipboard.writeText(shareUrl);
