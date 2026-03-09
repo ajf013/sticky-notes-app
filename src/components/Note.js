@@ -33,12 +33,12 @@ const Note = ({ id, title, text, date, handleDeleteNote, handleEditNote, handleR
 	};
 
 	const handleSocialShare = (platform) => {
-		const shareText = `Check out this note: ${title || 'Untitled'} \n${shareUrl}`;
+		const shareText = `Check out this note: ${title || 'Untitled'}`;
 		let url = '';
 
 		switch (platform) {
 			case 'whatsapp':
-				url = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+				url = `https://wa.me/?text=${encodeURIComponent(shareText + ' \n' + shareUrl)}`;
 				break;
 			case 'facebook':
 				url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
@@ -51,7 +51,6 @@ const Note = ({ id, title, text, date, handleDeleteNote, handleEditNote, handleR
 				if (navigator.share) {
 					navigator.share({
 						title: title || 'Untitled Note',
-						text: shareText,
 						url: shareUrl,
 					}).catch((error) => console.log('Error sharing', error));
 				} else {
