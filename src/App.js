@@ -61,21 +61,18 @@ const App = () => {
 			if (error) throw error;
 			if (data) {
 				const mappedData = data.map(note => {
-					// Check for auto-generated Supabase creation timestamps
-					const creationTime = note.created_at || note.inserted_at;
+					// Use the auto-generated Supabase timestamp if available, fallback to the manual 'date' string
+					const timestampStr = note.created_at || note.inserted_at || note.date;
 
-					// If the saved date string is just a date (no time), and the DB has the true creation time:
-					if (creationTime && note.date && !note.date.includes(':')) {
-						note.date = new Date(creationTime).toLocaleString([], {
-							year: 'numeric', month: 'numeric', day: 'numeric',
-							hour: '2-digit', minute: '2-digit'
-						});
-					}
-					// Alternatively, if note.date IS a Postgres timestamp like "2026-03-08T12:00:00Z"
-					else if (note.date && note.date.includes('T') && note.date.includes('Z')) {
-						note.date = new Date(note.date).toLocaleString([], {
-							year: 'numeric', month: 'numeric', day: 'numeric',
-							hour: '2-digit', minute: '2-digit'
+					if (timestampStr) {
+						// Parse the timestamp and convert to the user's local timezone
+						const localDate = new Date(timestampStr);
+						note.date = localDate.toLocaleString([], {
+							year: 'numeric',
+							month: 'short',
+							day: 'numeric',
+							hour: '2-digit',
+							minute: '2-digit'
 						});
 					}
 					return note;
@@ -95,13 +92,8 @@ const App = () => {
 		}
 	}, [session, fetchNotes]);
 	const addNote = async (title, text) => {
-		const date = new Date().toLocaleString([], {
-			year: 'numeric',
-			month: 'numeric',
-			day: 'numeric',
-			hour: '2-digit',
-			minute: '2-digit'
-		});
+		// Save the raw ISO string directly to the DB so it can be localized uniformly on fetch
+		const date = new Date().toISOString();
 		try {
 			const { data, error } = await supabase
 				.from('notes')
