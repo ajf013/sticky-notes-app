@@ -104,7 +104,20 @@ const App = () => {
 
 			if (error) throw error;
 			if (data && data.length > 0) {
-				setNotes([data[0], ...notes]);
+				const newNote = data[0];
+
+				// Format the date for immediate frontend display
+				if (newNote.date) {
+					newNote.date = new Date(newNote.date).toLocaleString([], {
+						year: 'numeric',
+						month: 'short',
+						day: 'numeric',
+						hour: '2-digit',
+						minute: '2-digit'
+					});
+				}
+
+				setNotes([newNote, ...notes]);
 			}
 		} catch (error) {
 			console.error("Error adding note: ", error.message);
