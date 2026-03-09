@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from './supabaseClient';
 import Auth from './components/Auth';
 import NotesList from './components/NotesList';
@@ -50,15 +50,7 @@ const App = () => {
 		};
 	}, []);
 
-	useEffect(() => {
-		if (session) {
-			fetchNotes();
-		} else {
-			setNotes([]);
-		}
-	}, [session]);
-
-	const fetchNotes = async () => {
+	const fetchNotes = useCallback(async () => {
 		try {
 			const { data, error } = await supabase
 				.from('notes')
@@ -93,8 +85,15 @@ const App = () => {
 		} catch (error) {
 			console.error("Error fetching notes: ", error.message);
 		}
-	};
+	}, [session]);
 
+	useEffect(() => {
+		if (session) {
+			fetchNotes();
+		} else {
+			setNotes([]);
+		}
+	}, [session, fetchNotes]);
 	const addNote = async (title, text) => {
 		const date = new Date().toLocaleString([], {
 			year: 'numeric',

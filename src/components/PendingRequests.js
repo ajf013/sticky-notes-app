@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabaseClient';
 import { Segment, Button, Table } from 'semantic-ui-react';
 
@@ -6,13 +6,7 @@ const PendingRequests = ({ session }) => {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        if (session) {
-            fetchRequests();
-        }
-    }, [session]);
-
-    const fetchRequests = async () => {
+    const fetchRequests = useCallback(async () => {
         try {
             // Fetch requests where the associated note belongs to the current user and status is pending
             const { data, error } = await supabase
@@ -34,8 +28,13 @@ const PendingRequests = ({ session }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [session]);
 
+    useEffect(() => {
+        if (session) {
+            fetchRequests();
+        }
+    }, [session, fetchRequests]);
     const handleAction = async (requestId, action) => {
         try {
             const { error } = await supabase
