@@ -1,4 +1,5 @@
 import { MdDeleteForever, MdShare, MdEdit } from 'react-icons/md';
+import { AiFillPushpin, AiOutlinePushpin } from 'react-icons/ai';
 import DOMPurify from 'dompurify';
 import { Button } from 'semantic-ui-react';
 import { useState, useRef, useEffect } from 'react';
@@ -6,7 +7,7 @@ import { FaWhatsapp, FaFacebook, FaInstagram, FaShareAlt, FaCopy } from 'react-i
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-const Note = ({ id, title, text, date, handleDeleteNote, handleEditNote, handleReadNote }) => {
+const Note = ({ id, title, text, date, isPinned, handlePinNote, handleDeleteNote, handleEditNote, handleReadNote }) => {
 	const [showShare, setShowShare] = useState(false);
 	const [access, setAccess] = useState('view');
 	const [isEditing, setIsEditing] = useState(false);
@@ -182,7 +183,7 @@ const Note = ({ id, title, text, date, handleDeleteNote, handleEditNote, handleR
 	};
 
 	return (
-		<div className='note' onClick={() => handleReadNote({ id, title, text, date })} style={{ cursor: 'pointer' }} data-aos='fade-up'>
+		<div className='note' onClick={() => handleReadNote({ id, title, text, date })} style={{ cursor: 'pointer', border: isPinned ? '2px solid #ffd700' : 'none' }} data-aos='fade-up'>
 			{title && <h3 style={{ marginBottom: '10px', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '5px' }}>{title}</h3>}
 			<div dangerouslySetInnerHTML={createMarkup(text)} style={{ flex: 1, overflow: 'hidden' }} />
 			<div className='note-footer'>
@@ -259,6 +260,28 @@ const Note = ({ id, title, text, date, handleDeleteNote, handleEditNote, handleR
 						size='1.3em'
 						title="Delete Note"
 					/>
+					{isPinned ? (
+						<AiFillPushpin
+							onClick={(e) => {
+								e.stopPropagation();
+								handlePinNote(id, !isPinned);
+							}}
+							className='delete-icon'
+							size='1.3em'
+							color='#ffd700'
+							title="Unpin Note"
+						/>
+					) : (
+						<AiOutlinePushpin
+							onClick={(e) => {
+								e.stopPropagation();
+								handlePinNote(id, !isPinned);
+							}}
+							className='delete-icon'
+							size='1.3em'
+							title="Pin Note"
+						/>
+					)}
 				</div>
 			</div>
 		</div>

@@ -144,6 +144,23 @@ const App = () => {
 			console.error("Error editing note: ", error.message);
 		}
 	};
+
+	const handlePinNote = async (id, isPinned) => {
+		try {
+			const { data, error } = await supabase
+				.from('notes')
+				.update({ is_pinned: isPinned })
+				.eq('id', id)
+				.select();
+
+			if (error) throw error;
+			if (data && data.length > 0) {
+				setNotes(notes.map(note => note.id === id ? data[0] : note));
+			}
+		} catch (error) {
+			console.error("Error pinning note: ", error.message);
+		}
+	};
 	return (
 		<ThemeProvider theme={themeMode}>
 			<GlobalStyles />
@@ -165,14 +182,24 @@ const App = () => {
 										<Search handleSearchNote={setSearchText} />
 										<PendingRequests session={session} />
 										<NotesList
-											notes={notes.filter((note) =>
-												note.text.toLowerCase().includes(searchText) ||
-												(note.title && note.title.toLowerCase().includes(searchText))
-											)}
+											notes={notes
+												.filter((note) =>
+													note.text.toLowerCase().includes(searchText) ||
+													(note.title && note.title.toLowerCase().includes(searchText))
+												)
+												.sort((a, b) => {
+													// Sort pinned notes to the top
+													if (a.is_pinned && !b.is_pinned) return -1;
+													if (!a.is_pinned && b.is_pinned) return 1;
+													// Then sort by date (fallback since the state is already mostly sorted)
+													return 0;
+												})
+											}
 											handleAddNote={addNote}
 											handleDeleteNote={deleteNote}
 											handleEditNote={editNote}
 											handleReadNote={setSelectedNote}
+											handlePinNote={handlePinNote}
 										/>
 										<Modal
 											open={!!selectedNote}
