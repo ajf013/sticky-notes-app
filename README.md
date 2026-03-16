@@ -23,10 +23,8 @@ A modern, feature-rich Notes Application built with React.js and Supabase.
 ## 📸 Screenshots
 
 ### Dashboard (Violet Theme)
-![Dashboard](./screenshots/dashboard_violet.png)
 
 ### Share Options & Access Control
-![Share Options](./screenshots/share_features.png)
 
 ## 📂 Project Structure
 
