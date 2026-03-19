@@ -328,7 +328,7 @@ export default function Auth() {
             <SocialContainer>
               <div className="social" onClick={() => handleProviderLogin('facebook')}><Icon name="facebook f" /></div>
               <div className="social" onClick={() => handleProviderLogin('google')}><Icon name="google plus g" /></div>
-              <div className="social" onClick={() => handleProviderLogin('linkedin')}><Icon name="linkedin in" /></div>
+              <div className="social" onClick={() => handleProviderLogin('instagram')}><Icon name="instagram" /></div>
             </SocialContainer>
             <span>or use your email for registration</span>
             <StyledInput 
@@ -367,7 +367,7 @@ export default function Auth() {
             <SocialContainer>
               <div className="social" onClick={() => handleProviderLogin('facebook')}><Icon name="facebook f" /></div>
               <div className="social" onClick={() => handleProviderLogin('google')}><Icon name="google plus g" /></div>
-              <div className="social" onClick={() => handleProviderLogin('linkedin')}><Icon name="linkedin in" /></div>
+              <div className="social" onClick={() => handleProviderLogin('instagram')}><Icon name="instagram" /></div>
             </SocialContainer>
             <span>or use your account</span>
             <StyledInput 
