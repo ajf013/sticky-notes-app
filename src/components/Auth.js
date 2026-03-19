@@ -326,9 +326,9 @@ export default function Auth() {
           <StyledForm onSubmit={handleAuth}>
             <h1>Create Account</h1>
             <SocialContainer>
-              <div className="social" onClick={() => handleProviderLogin('facebook')}><Icon name="facebook f" /></div>
-              <div className="social" onClick={() => handleProviderLogin('google')}><Icon name="google plus g" /></div>
-              <div className="social" onClick={() => handleProviderLogin('instagram')}><Icon name="instagram" /></div>
+              <div className="social" style={{ width: '100%', borderRadius: '10px', gap: '10px' }} onClick={() => handleProviderLogin('instagram')}>
+                <Icon name="instagram" /> <span>Login with Instagram</span>
+              </div>
             </SocialContainer>
             <span>or use your email for registration</span>
             <StyledInput 
@@ -365,9 +365,9 @@ export default function Auth() {
           <StyledForm onSubmit={handleAuth}>
             <h1>Sign in</h1>
             <SocialContainer>
-              <div className="social" onClick={() => handleProviderLogin('facebook')}><Icon name="facebook f" /></div>
-              <div className="social" onClick={() => handleProviderLogin('google')}><Icon name="google plus g" /></div>
-              <div className="social" onClick={() => handleProviderLogin('instagram')}><Icon name="instagram" /></div>
+              <div className="social" style={{ width: '100%', borderRadius: '10px', gap: '10px' }} onClick={() => handleProviderLogin('instagram')}>
+                <Icon name="instagram" /> <span>Login with Instagram</span>
+              </div>
             </SocialContainer>
             <span>or use your account</span>
             <StyledInput 
