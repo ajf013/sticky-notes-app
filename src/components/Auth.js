@@ -15,6 +15,10 @@ const AuthWrapper = styled.div`
   min-height: 80vh;
   padding: 2rem;
   font-family: 'Inter', sans-serif;
+  @media (max-width: 768px) {
+    padding: 1rem;
+    min-height: 100vh;
+  }
 `;
 
 const MainContainer = styled.div`
@@ -26,9 +30,11 @@ const MainContainer = styled.div`
   width: 1000px;
   max-width: 100%;
   min-height: 600px;
+  display: flex;
   
   @media (max-width: 768px) {
-    min-height: 500px;
+    min-height: 550px;
+    border-radius: 20px;
   }
 `;
 
@@ -37,10 +43,10 @@ const FormContainer = styled.div`
   top: 0;
   height: 100%;
   transition: all 0.6s ease-in-out;
+  width: 50%;
   
   ${props => props.type === 'signup' ? css`
     left: 0;
-    width: 50%;
     opacity: 0;
     z-index: 1;
     ${!props.isLogin && css`
@@ -51,7 +57,6 @@ const FormContainer = styled.div`
     `}
   ` : css`
     left: 0;
-    width: 50%;
     z-index: 2;
     ${!props.isLogin && css`
       transform: translateX(100%);
@@ -60,9 +65,16 @@ const FormContainer = styled.div`
 
   @media (max-width: 768px) {
     width: 100%;
-    position: relative;
-    ${props => (props.type === 'signup' && props.isLogin) || (props.type === 'signin' && !props.isLogin) ? 'display: none;' : 'display: block;'}
-    transform: none !important;
+    ${props => props.type === 'signup' ? css`
+      transform: translateX(${props.isLogin ? '-100%' : '0'});
+      opacity: ${props.isLogin ? '0' : '1'};
+      z-index: ${props.isLogin ? '1' : '5'};
+    ` : css`
+      transform: translateX(${props.isLogin ? '0' : '100%'});
+      opacity: ${props.isLogin ? '1' : '0'};
+      z-index: ${props.isLogin ? '5' : '1'};
+    `}
+    animation: none !important;
   }
 `;
 
@@ -75,6 +87,10 @@ const StyledForm = styled.form`
   padding: 0 50px;
   height: 100%;
   text-align: center;
+
+  @media (max-width: 480px) {
+    padding: 0 25px;
+  }
 
   h1 {
     font-weight: bold;
@@ -168,12 +184,11 @@ const OverlayContainer = styled.div`
   `}
 
   @media (max-width: 768px) {
-    display: none;
+    display: none; /* Hide standard overlay on mobile to use direct form sliding */
   }
 `;
 
 const Overlay = styled.div`
-  background: #ff416c;
   background: linear-gradient(to right, #4e4376, #2b5876);
   background-repeat: no-repeat;
   background-size: cover;
@@ -251,10 +266,19 @@ const MobileToggle = styled.div`
   display: none;
   @media (max-width: 768px) {
     display: block;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     color: #4e4376;
     font-weight: bold;
     cursor: pointer;
+    font-size: 14px;
+    padding: 10px;
+    border: 1px dashed #4e4376;
+    border-radius: 10px;
+    background: #fdfbff;
+    
+    &:hover {
+      background: #f4f1ff;
+    }
   }
 `;
 
@@ -279,7 +303,6 @@ export default function Auth() {
   const [isLockedOut, setIsLockedOut] = useState(false);
 
   useEffect(() => {
-    // Check if current email is locked out
     if (email) {
       const attempts = localStorage.getItem(`failed_attempts_${email}`) || 0;
       if (parseInt(attempts) >= 3) {
@@ -305,7 +328,6 @@ export default function Auth() {
         const { error } = await supabase.auth.signIn({ email, password });
         
         if (error) {
-          // Increment failed attempts
           const attempts = (parseInt(localStorage.getItem(`failed_attempts_${email}`)) || 0) + 1;
           localStorage.setItem(`failed_attempts_${email}`, attempts);
           
@@ -316,7 +338,6 @@ export default function Auth() {
           throw error;
         }
 
-        // Clear attempts on successful login
         localStorage.removeItem(`failed_attempts_${email}`);
       } else {
         const { error } = await supabase.auth.signUp(
@@ -346,7 +367,6 @@ export default function Auth() {
       });
       if (error) throw error;
       setInfoMsg('Password reset link sent to your email!');
-      // Clear lockout locally once they request a reset (assuming they will reset it)
       localStorage.removeItem(`failed_attempts_${email}`);
       setIsLockedOut(false);
     } catch (error) {
@@ -362,7 +382,7 @@ export default function Auth() {
         <MainContainer style={{ width: '500px', minHeight: '400px' }}>
           <StyledForm onSubmit={handleForgotPassword} style={{ padding: '40px' }}>
             <h1>Reset Password</h1>
-            <p>Enter your email address and we'll send you a link to reset your password and unlock your account.</p>
+            <p>Enter your email address to reset and unlock your account.</p>
             <StyledInput 
               type="email" 
               placeholder="Email" 
@@ -391,7 +411,7 @@ export default function Auth() {
         <FormContainer type="signup" isLogin={isLogin}>
           <StyledForm onSubmit={handleAuth}>
             <h1>Create Account</h1>
-            <p>Start organizing your thoughts today.</p>
+            <p>Start adding your notes today</p>
             <StyledInput 
               type="email" 
               placeholder="Email" 
@@ -415,7 +435,7 @@ export default function Auth() {
             <MainButton disabled={loading}>
               {loading ? 'Processing...' : 'Sign Up'}
             </MainButton>
-            <MobileToggle onClick={() => setIsLogin(true)}>
+            <MobileToggle onClick={() => { setIsLogin(true); setErrorMsg(''); setInfoMsg(''); }}>
               Already have an account? Sign In
             </MobileToggle>
           </StyledForm>
@@ -425,7 +445,7 @@ export default function Auth() {
         <FormContainer type="signin" isLogin={isLogin}>
           <StyledForm onSubmit={handleAuth}>
             <h1>Sign in</h1>
-            <p>Welcome back! Please enter your details.</p>
+            <p>Welcome back! Please enter your personal details.</p>
             <StyledInput 
               type="email" 
               placeholder="Email" 
@@ -455,7 +475,7 @@ export default function Auth() {
             <MainButton disabled={loading || isLockedOut}>
               {loading ? 'Processing...' : 'Sign In'}
             </MainButton>
-            <MobileToggle onClick={() => setIsLogin(false)}>
+            <MobileToggle onClick={() => { setIsLogin(false); setErrorMsg(''); setInfoMsg(''); }}>
               Don't have an account? Sign Up
             </MobileToggle>
           </StyledForm>
@@ -471,7 +491,7 @@ export default function Auth() {
             </OverlayPanel>
             <OverlayPanel side="right" isLogin={isLogin}>
               <h1>Hello, Friend!</h1>
-              <p>Enter your personal details and start journey with us</p>
+              <p>Enter your personal details and start adding your notes today</p>
               <GhostButton onClick={() => { setIsLogin(false); setErrorMsg(''); setInfoMsg(''); }}>Sign Up</GhostButton>
             </OverlayPanel>
           </Overlay>
