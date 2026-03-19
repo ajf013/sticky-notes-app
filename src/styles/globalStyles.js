@@ -8,15 +8,16 @@ const gradientAnimation = keyframes`
 
 export const GlobalStyles = createGlobalStyle`
   body {
-    background: ${({ theme }) => theme.body};
+    background-color: ${({ theme }) => theme.body};
     background-image: ${({ theme }) => theme.backgroundImage};
-    background-size: 400% 400%;
-    animation: ${gradientAnimation} 45s ease infinite;
+    background-size: cover;
+    background-repeat: no-repeat;
     background-attachment: fixed;
     color: ${({ theme }) => theme.text};
     font-family: 'Roboto', sans-serif;
     transition: all .5s linear;
     min-height: 100vh;
+    margin: 0;
   }
   p {
     line-height: 1.4rem;
@@ -42,7 +43,7 @@ export const GlobalStyles = createGlobalStyle`
 `;
 
 export const lightTheme = {
-  body: 'transparent',
+  body: '#f5f5f5',
   text: '#121212',
   primary: '#6200ee',
   headerBg: 'rgba(255, 255, 255, 0.6)',
@@ -50,7 +51,7 @@ export const lightTheme = {
 };
 
 export const darkTheme = {
-  body: 'transparent',
+  body: '#121212',
   text: '#fff',
   primary: '#bb86fc',
   headerBg: 'rgba(0, 0, 0, 0.5)',
