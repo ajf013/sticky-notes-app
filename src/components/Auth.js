@@ -1,213 +1,279 @@
 import { useState } from 'react';
 import { supabase } from '../supabaseClient';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import { Icon } from 'semantic-ui-react';
 
-const fadeIn = keyframes`
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-`;
-
-const floatAnimation = keyframes`
-  0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(5deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
-`;
-
-const fluidGradient = keyframes`
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+const move = keyframes`
+  0%, 49.99% { opacity: 0; z-index: 1; }
+  50%, 100% { opacity: 1; z-index: 5; }
 `;
 
 const AuthWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 200px); /* Adjust based on header/footer */
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  min-height: 80vh;
+  padding: 2rem;
+  font-family: 'Inter', sans-serif;
+`;
+
+const MainContainer = styled.div`
+  background-color: #fff;
+  border-radius: 30px;
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  position: relative;
+  overflow: hidden;
+  width: 1000px;
+  max-width: 100%;
+  min-height: 600px;
   
   @media (max-width: 768px) {
-    margin-top: 4rem;
+    min-height: 500px;
   }
 `;
 
-const AuthCard = styled.div`
-  background: ${({ theme }) => (theme === 'light' ? 'rgba(69, 11, 45, 0.85)' : 'rgba(60, 13, 135, 0.5)')};
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 24px;
-  padding: 3rem 2.5rem;
-  width: 100%;
-  max-width: 440px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-  animation: ${fadeIn} 0.6s ease-out forwards;
-`;
-
-const AuthHeader = styled.div`
-  text-align: center;
-  margin-bottom: 2rem;
+const FormContainer = styled.div`
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: all 0.6s ease-in-out;
   
-  h1 {
-    font-size: 2.2rem;
-    font-weight: 800;
-    margin-bottom: 0.5rem;
-    color: #cdc6d0e5;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
+  ${props => props.type === 'signup' ? css`
+    left: 0;
+    width: 50%;
+    opacity: 0;
+    z-index: 1;
+    ${!props.isLogin && css`
+      transform: translateX(100%);
+      opacity: 1;
+      z-index: 5;
+      animation: ${move} 0.6s;
+    `}
+  ` : css`
+    left: 0;
+    width: 50%;
+    z-index: 2;
+    ${!props.isLogin && css`
+      transform: translateX(100%);
+    `}
+  `}
 
-  h2 {
-    font-size: 1.6rem;
-    font-weight: 800;
-    margin-top: 1rem;
-    color: ${({ theme }) => (theme === 'light' ? '#222' : '#fff')};
-  }
-  
-  p {
-    color: ${({ theme }) => (theme === 'light' ? '#333' : '#eee')};
-    font-size: 1rem;
-    font-weight: 500;
-    margin-top: 0.5rem;
-  }
-
-  .animated-icon {
-    animation: ${floatAnimation} 3s ease-in-out infinite;
-    display: inline-block;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+  @media (max-width: 768px) {
+    width: 100%;
+    position: relative;
+    ${props => (props.type === 'signup' && props.isLogin) || (props.type === 'signin' && !props.isLogin) ? 'display: none;' : 'display: block;'}
+    transform: none !important;
   }
 `;
 
 const StyledForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-`;
-
-const InputGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  label {
-    font-size: 0.9rem;
-    font-weight: 700;
-    margin-left: 0.25rem;
-    color: ${({ theme }) => (theme === 'light' ? '#222' : '#ccc')};
-  }
-`;
-
-const PasswordContainer = styled.div`
-  position: relative;
+  background-color: #ffffff;
   display: flex;
   align-items: center;
-`;
-
-const StyledInput = styled.input`
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0.9rem 1.2rem;
-  padding-right: 2.5rem; /* Room for icon */
-  border-radius: 12px;
-  border: 2px solid transparent;
-  background: ${({ theme }) => (theme === 'light' ? 'linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)' : 'linear-gradient(135deg, #2b5876 0%, #4e4376 100%)')};
-  background-size: 200% 200%;
-  animation: ${fluidGradient} 10s ease infinite;
-  color: ${({ theme }) => (theme === 'light' ? '#333' : '#fff')};
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  outline: none;
-
-  &:focus {
-    border-color: #0072FF;
-    box-shadow: 0 0 0 4px rgba(0, 114, 255, 0.1);
-  }
-
-  &::placeholder {
-    color: #666;
-  }
-`;
-
-const EyeIcon = styled.div`
-  position: absolute;
-  right: 12px;
-  cursor: pointer;
-  color: ${({ theme }) => (theme === 'light' ? '#666' : '#ccc')};
-  transition: color 0.2s ease;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  font-size: 1.1rem;
-
-  &:hover {
-    color: ${({ theme }) => (theme === 'light' ? '#333' : '#fff')};
-  }
-`;
-
-const SubmitButton = styled.button`
-  background: white;
-  color: #ff69b4;
-  border: 2px solid #ff69b4;
-  border-radius: 12px;
-  padding: 1rem;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 0.5rem;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 114, 255, 0.3);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  &:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-    transform: none;
-  }
-`;
-
-const ErrorMessage = styled.div`
-  background-color: rgba(255, 77, 79, 0.1);
-  color: #ff4d4f;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 77, 79, 0.3);
-  font-size: 0.9rem;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 50px;
+  height: 100%;
   text-align: center;
-  margin-top: 1rem;
+
+  h1 {
+    font-weight: bold;
+    margin: 0;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  p {
+    font-size: 14px;
+    font-weight: 100;
+    line-height: 20px;
+    letter-spacing: 0.5px;
+    margin: 20px 0 30px;
+  }
 `;
 
-const ToggleText = styled.div`
-  text-align: center;
-  margin-top: 1.5rem;
-  font-size: 0.95rem;
-  color: ${({ theme }) => (theme === 'light' ? '#666' : '#bbb')};
-
-  span {
-    color: ${({ theme }) => (theme === 'light' ? '#fff' : '#ffc0cb')};
-    font-weight: 800;
+const SocialContainer = styled.div`
+  margin: 20px 0;
+  
+  .social {
+    border: 1px solid #DDDDDD;
+    border-radius: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 5px;
+    height: 40px;
+    width: 40px;
+    color: #333;
+    transition: all 0.2s ease;
     cursor: pointer;
-    transition: color 0.2s ease;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-
+    
     &:hover {
-      text-decoration: underline;
+      background-color: #f4f4f4;
+      transform: scale(1.1);
     }
   }
 `;
 
+const StyledInput = styled.input`
+  background-color: #f4f7f6;
+  border: none;
+  padding: 12px 15px;
+  margin: 8px 0;
+  width: 100%;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+
+  &:focus {
+    background-color: #e9eceb;
+    box-shadow: inset 0 0 0 2px #4e4376;
+  }
+`;
+
+const PasswordWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+`;
+
+const EyeToggle = styled.div`
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  color: #888;
+  &:hover { color: #555; }
+`;
+
+const MainButton = styled.button`
+  border-radius: 20px;
+  border: 1px solid #4e4376;
+  background: linear-gradient(to right, #4e4376, #2b5876);
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 12px 45px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: transform 80ms ease-in;
+  cursor: pointer;
+  margin-top: 1rem;
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:focus {
+    outline: none;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+`;
+
+const OverlayContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: transform 0.6s ease-in-out;
+  z-index: 100;
+
+  ${props => !props.isLogin && css`
+    transform: translateX(-100%);
+  `}
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const Overlay = styled.div`
+  background: #ff416c;
+  background: linear-gradient(to right, #4e4376, #2b5876);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 0 0;
+  color: #FFFFFF;
+  position: relative;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transform: translateX(0);
+  transition: transform 0.6s ease-in-out;
+
+  ${props => !props.isLogin && css`
+    transform: translateX(50%);
+  `}
+`;
+
+const OverlayPanel = styled.div`
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+  text-align: center;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  transform: translateX(0);
+  transition: transform 0.6s ease-in-out;
+  
+  ${props => props.side === 'left' ? css`
+    transform: translateX(-20%);
+    ${!props.isLogin && css`
+      transform: translateX(0);
+    `}
+  ` : css`
+    right: 0;
+    transform: translateX(0);
+    ${!props.isLogin && css`
+      transform: translateX(20%);
+    `}
+  `}
+`;
+
+const GhostButton = styled(MainButton)`
+  background: transparent;
+  border-color: #FFFFFF;
+  margin-top: 1.5rem;
+`;
+
+const ErrorMsg = styled.div`
+  color: #ff4d4f;
+  background: #fff1f0;
+  border: 1px solid #ffccc7;
+  padding: 8px;
+  border-radius: 4px;
+  margin: 10px 0;
+  font-size: 13px;
+  width: 100%;
+`;
+
+const MobileToggle = styled.div`
+  display: none;
+  @media (max-width: 768px) {
+    display: block;
+    margin-top: 2rem;
+    color: #4e4376;
+    font-weight: bold;
+    cursor: pointer;
+  }
+`;
 
 export default function Auth() {
+  const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLogin, setIsLogin] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
@@ -218,19 +284,16 @@ export default function Auth() {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signIn({
-          email,
-          password,
-        });
+        const { error } = await supabase.auth.signIn({ email, password });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
+        const { error } = await supabase.auth.signUp(
+          { email, password },
+          { redirectTo: window.location.origin }
+        );
         if (error) throw error;
-        alert('We sent a verification link to your email. Please check your inbox (and spam folder) to complete registration!');
-        setIsLogin(true); // switch back to login mode after signup
+        alert('Verification link sent! Please check your email inbox (and spam folder).');
+        setIsLogin(true);
       }
     } catch (error) {
       setErrorMsg(error.error_description || error.message);
@@ -241,58 +304,103 @@ export default function Auth() {
 
   return (
     <AuthWrapper>
-      <AuthCard>
-        <AuthHeader>
-          <h1>Sticky Notes App</h1>
-          <div className="animated-icon">
-            <Icon name='sticky note' size='huge' style={{ color: '#fff' }} />
-          </div>
-          <h2>{isLogin ? 'Welcome Back' : 'Create an Account'}</h2>
-          <p>{isLogin ? 'Sign in to access your notes' : 'Start organizing your thoughts today.'}</p>
-        </AuthHeader>
-
-        <StyledForm onSubmit={handleAuth}>
-          <InputGroup>
-            <label>Email Address</label>
-            <StyledInput
-              type='email'
-              placeholder='you@example.com'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+      <MainContainer>
+        {/* Sign Up Form */}
+        <FormContainer type="signup" isLogin={isLogin}>
+          <StyledForm onSubmit={handleAuth}>
+            <h1>Create Account</h1>
+            <SocialContainer>
+              <div className="social"><Icon name="facebook f" /></div>
+              <div className="social"><Icon name="google plus g" /></div>
+              <div className="social"><Icon name="linkedin in" /></div>
+            </SocialContainer>
+            <span>or use your email for registration</span>
+            <StyledInput 
+              type="email" 
+              placeholder="Email" 
+              value={email} 
+              onChange={e => setEmail(e.target.value)} 
+              required 
             />
-          </InputGroup>
-
-          <InputGroup>
-            <label>Password</label>
-            <PasswordContainer>
-              <StyledInput
-                type={showPassword ? 'text' : 'password'}
-                placeholder='••••••••'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+            <PasswordWrapper>
+              <StyledInput 
+                type={showPassword ? "text" : "password"} 
+                placeholder="Password" 
+                value={password} 
+                onChange={e => setPassword(e.target.value)} 
+                required 
               />
-              <EyeIcon onClick={() => setShowPassword(!showPassword)}>
+              <EyeToggle onClick={() => setShowPassword(!showPassword)}>
                 <Icon name={showPassword ? 'eye slash' : 'eye'} />
-              </EyeIcon>
-            </PasswordContainer>
-          </InputGroup>
+              </EyeToggle>
+            </PasswordWrapper>
+            {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
+            <MainButton disabled={loading}>
+              {loading ? 'Processing...' : 'Sign Up'}
+            </MainButton>
+            <MobileToggle onClick={() => setIsLogin(true)}>
+              Already have an account? Sign In
+            </MobileToggle>
+          </StyledForm>
+        </FormContainer>
 
-          {errorMsg && <ErrorMessage>{errorMsg}</ErrorMessage>}
+        {/* Sign In Form */}
+        <FormContainer type="signin" isLogin={isLogin}>
+          <StyledForm onSubmit={handleAuth}>
+            <h1>Sign in</h1>
+            <SocialContainer>
+              <div className="social"><Icon name="facebook f" /></div>
+              <div className="social"><Icon name="google plus g" /></div>
+              <div className="social"><Icon name="linkedin in" /></div>
+            </SocialContainer>
+            <span>or use your account</span>
+            <StyledInput 
+              type="email" 
+              placeholder="Email" 
+              value={email} 
+              onChange={e => setEmail(e.target.value)} 
+              required 
+            />
+            <PasswordWrapper>
+              <StyledInput 
+                type={showPassword ? "text" : "password"} 
+                placeholder="Password" 
+                value={password} 
+                onChange={e => setPassword(e.target.value)} 
+                required 
+              />
+              <EyeToggle onClick={() => setShowPassword(!showPassword)}>
+                <Icon name={showPassword ? 'eye slash' : 'eye'} />
+              </EyeToggle>
+            </PasswordWrapper>
+            {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
+            <a href="#" style={{ color: '#333', fontSize: '14px', margin: '15px 0' }}>Forgot your password?</a>
+            <MainButton disabled={loading}>
+              {loading ? 'Processing...' : 'Sign In'}
+            </MainButton>
+            <MobileToggle onClick={() => setIsLogin(false)}>
+              Don't have an account? Sign Up
+            </MobileToggle>
+          </StyledForm>
+        </FormContainer>
 
-          <SubmitButton type='submit' disabled={loading}>
-            {loading ? 'Processing...' : isLogin ? 'Sign In' : 'Sign Up'}
-          </SubmitButton>
-        </StyledForm>
-
-        <ToggleText>
-          {isLogin ? "Don't have an account yet?" : "Already have an account?"}{' '}
-          <span onClick={() => { setIsLogin(!isLogin); setErrorMsg(''); }}>
-            {isLogin ? 'Sign Up' : 'Sign In'}
-          </span>
-        </ToggleText>
-      </AuthCard>
+        {/* Sliding Overlay */}
+        <OverlayContainer isLogin={isLogin}>
+          <Overlay isLogin={isLogin}>
+            <OverlayPanel side="left" isLogin={isLogin}>
+              <h1>Welcome Back!</h1>
+              <p>To keep connected with us please login with your personal info</p>
+              <GhostButton onClick={() => { setIsLogin(true); setErrorMsg(''); }}>Sign In</GhostButton>
+            </OverlayPanel>
+            <OverlayPanel side="right" isLogin={isLogin}>
+              <h1>Hello, Friend!</h1>
+              <p>Enter your personal details and start journey with us</p>
+              <GhostButton onClick={() => { setIsLogin(false); setErrorMsg(''); }}>Sign Up</GhostButton>
+            </OverlayPanel>
+          </Overlay>
+        </OverlayContainer>
+      </MainContainer>
     </AuthWrapper>
   );
 }
+
