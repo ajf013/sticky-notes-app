@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import styled, { keyframes, css } from 'styled-components';
 import { Icon } from 'semantic-ui-react';
@@ -88,30 +88,8 @@ const StyledForm = styled.form`
     font-weight: 100;
     line-height: 20px;
     letter-spacing: 0.5px;
-    margin: 20px 0 30px;
-  }
-`;
-
-const SocialContainer = styled.div`
-  margin: 20px 0;
-  
-  .social {
-    border: 1px solid #DDDDDD;
-    border-radius: 50%;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 5px;
-    height: 40px;
-    width: 40px;
-    color: #333;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    
-    &:hover {
-      background-color: #f4f4f4;
-      transform: scale(1.1);
-    }
+    margin: 10px 0 20px;
+    color: #666;
   }
 `;
 
@@ -258,6 +236,17 @@ const ErrorMsg = styled.div`
   width: 100%;
 `;
 
+const InfoMsg = styled.div`
+  color: #1890ff;
+  background: #e6f7ff;
+  border: 1px solid #91d5ff;
+  padding: 8px;
+  border-radius: 4px;
+  margin: 10px 0;
+  font-size: 13px;
+  width: 100%;
+`;
+
 const MobileToggle = styled.div`
   display: none;
   @media (max-width: 768px) {
@@ -269,30 +258,73 @@ const MobileToggle = styled.div`
   }
 `;
 
+const ForgotPasswordLink = styled.div`
+  color: #333;
+  font-size: 14px;
+  margin: 15px 0;
+  cursor: pointer;
+  text-decoration: underline;
+  &:hover { color: #4e4376; }
+`;
+
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [infoMsg, setInfoMsg] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [view, setView] = useState('auth'); // 'auth' or 'forgot'
+  const [isLockedOut, setIsLockedOut] = useState(false);
+
+  useEffect(() => {
+    // Check if current email is locked out
+    if (email) {
+      const attempts = localStorage.getItem(`failed_attempts_${email}`) || 0;
+      if (parseInt(attempts) >= 3) {
+        setIsLockedOut(true);
+      } else {
+        setIsLockedOut(false);
+      }
+    }
+  }, [email]);
 
   const handleAuth = async (e) => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg('');
+    setInfoMsg('');
 
     try {
       if (isLogin) {
+        if (isLockedOut) {
+          throw new Error('Too many failed attempts. Please use "Forgot Password" to reset and unlock your account.');
+        }
+
         const { error } = await supabase.auth.signIn({ email, password });
-        if (error) throw error;
+        
+        if (error) {
+          // Increment failed attempts
+          const attempts = (parseInt(localStorage.getItem(`failed_attempts_${email}`)) || 0) + 1;
+          localStorage.setItem(`failed_attempts_${email}`, attempts);
+          
+          if (attempts >= 3) {
+            setIsLockedOut(true);
+            throw new Error('3 failed attempts reached. Account locked. Please reset your password.');
+          }
+          throw error;
+        }
+
+        // Clear attempts on successful login
+        localStorage.removeItem(`failed_attempts_${email}`);
       } else {
         const { error } = await supabase.auth.signUp(
           { email, password },
           { redirectTo: window.location.origin }
         );
         if (error) throw error;
-        alert('Verification link sent! Please check your email inbox (and spam folder).');
+        alert('Verification link sent! Please check your email inbox.');
         setIsLogin(true);
       }
     } catch (error) {
@@ -302,21 +334,55 @@ export default function Auth() {
     }
   };
 
-  const handleProviderLogin = async (provider) => {
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
     setLoading(true);
     setErrorMsg('');
+    setInfoMsg('');
+
     try {
-      const { error } = await supabase.auth.signIn(
-        { provider },
-        { redirectTo: window.location.origin }
-      );
+      const { error } = await supabase.auth.api.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin,
+      });
       if (error) throw error;
+      setInfoMsg('Password reset link sent to your email!');
+      // Clear lockout locally once they request a reset (assuming they will reset it)
+      localStorage.removeItem(`failed_attempts_${email}`);
+      setIsLockedOut(false);
     } catch (error) {
       setErrorMsg(error.message);
     } finally {
       setLoading(false);
     }
   };
+
+  if (view === 'forgot') {
+    return (
+      <AuthWrapper>
+        <MainContainer style={{ width: '500px', minHeight: '400px' }}>
+          <StyledForm onSubmit={handleForgotPassword} style={{ padding: '40px' }}>
+            <h1>Reset Password</h1>
+            <p>Enter your email address and we'll send you a link to reset your password and unlock your account.</p>
+            <StyledInput 
+              type="email" 
+              placeholder="Email" 
+              value={email} 
+              onChange={e => setEmail(e.target.value)} 
+              required 
+            />
+            {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
+            {infoMsg && <InfoMsg>{infoMsg}</InfoMsg>}
+            <MainButton disabled={loading}>
+              {loading ? 'Sending...' : 'Send Reset Link'}
+            </MainButton>
+            <ForgotPasswordLink onClick={() => { setView('auth'); setErrorMsg(''); setInfoMsg(''); }}>
+              Back to Sign In
+            </ForgotPasswordLink>
+          </StyledForm>
+        </MainContainer>
+      </AuthWrapper>
+    );
+  }
 
   return (
     <AuthWrapper>
@@ -325,12 +391,7 @@ export default function Auth() {
         <FormContainer type="signup" isLogin={isLogin}>
           <StyledForm onSubmit={handleAuth}>
             <h1>Create Account</h1>
-            <SocialContainer>
-              <div className="social" style={{ width: '100%', borderRadius: '10px', gap: '10px' }} onClick={() => handleProviderLogin('instagram')}>
-                <Icon name="instagram" /> <span>Login with Instagram</span>
-              </div>
-            </SocialContainer>
-            <span>or use your email for registration</span>
+            <p>Start organizing your thoughts today.</p>
             <StyledInput 
               type="email" 
               placeholder="Email" 
@@ -364,12 +425,7 @@ export default function Auth() {
         <FormContainer type="signin" isLogin={isLogin}>
           <StyledForm onSubmit={handleAuth}>
             <h1>Sign in</h1>
-            <SocialContainer>
-              <div className="social" style={{ width: '100%', borderRadius: '10px', gap: '10px' }} onClick={() => handleProviderLogin('instagram')}>
-                <Icon name="instagram" /> <span>Login with Instagram</span>
-              </div>
-            </SocialContainer>
-            <span>or use your account</span>
+            <p>Welcome back! Please enter your details.</p>
             <StyledInput 
               type="email" 
               placeholder="Email" 
@@ -390,8 +446,13 @@ export default function Auth() {
               </EyeToggle>
             </PasswordWrapper>
             {errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}
-            <a href="#" style={{ color: '#333', fontSize: '14px', margin: '15px 0' }}>Forgot your password?</a>
-            <MainButton disabled={loading}>
+            {isLockedOut && (
+              <InfoMsg>Account locked after 3 failed attempts. Please reset your password to unlock.</InfoMsg>
+            )}
+            <ForgotPasswordLink onClick={() => { setView('forgot'); setErrorMsg(''); setInfoMsg(''); }}>
+              Forgot your password?
+            </ForgotPasswordLink>
+            <MainButton disabled={loading || isLockedOut}>
               {loading ? 'Processing...' : 'Sign In'}
             </MainButton>
             <MobileToggle onClick={() => setIsLogin(false)}>
@@ -406,12 +467,12 @@ export default function Auth() {
             <OverlayPanel side="left" isLogin={isLogin}>
               <h1>Welcome Back!</h1>
               <p>To keep connected with us please login with your personal info</p>
-              <GhostButton onClick={() => { setIsLogin(true); setErrorMsg(''); }}>Sign In</GhostButton>
+              <GhostButton onClick={() => { setIsLogin(true); setErrorMsg(''); setInfoMsg(''); }}>Sign In</GhostButton>
             </OverlayPanel>
             <OverlayPanel side="right" isLogin={isLogin}>
               <h1>Hello, Friend!</h1>
               <p>Enter your personal details and start journey with us</p>
-              <GhostButton onClick={() => { setIsLogin(false); setErrorMsg(''); }}>Sign Up</GhostButton>
+              <GhostButton onClick={() => { setIsLogin(false); setErrorMsg(''); setInfoMsg(''); }}>Sign Up</GhostButton>
             </OverlayPanel>
           </Overlay>
         </OverlayContainer>
@@ -419,4 +480,3 @@ export default function Auth() {
     </AuthWrapper>
   );
 }
-
