@@ -302,6 +302,22 @@ export default function Auth() {
     }
   };
 
+  const handleProviderLogin = async (provider) => {
+    setLoading(true);
+    setErrorMsg('');
+    try {
+      const { error } = await supabase.auth.signIn(
+        { provider },
+        { redirectTo: window.location.origin }
+      );
+      if (error) throw error;
+    } catch (error) {
+      setErrorMsg(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthWrapper>
       <MainContainer>
@@ -310,9 +326,9 @@ export default function Auth() {
           <StyledForm onSubmit={handleAuth}>
             <h1>Create Account</h1>
             <SocialContainer>
-              <div className="social"><Icon name="facebook f" /></div>
-              <div className="social"><Icon name="google plus g" /></div>
-              <div className="social"><Icon name="linkedin in" /></div>
+              <div className="social" onClick={() => handleProviderLogin('facebook')}><Icon name="facebook f" /></div>
+              <div className="social" onClick={() => handleProviderLogin('google')}><Icon name="google plus g" /></div>
+              <div className="social" onClick={() => handleProviderLogin('linkedin')}><Icon name="linkedin in" /></div>
             </SocialContainer>
             <span>or use your email for registration</span>
             <StyledInput 
@@ -349,9 +365,9 @@ export default function Auth() {
           <StyledForm onSubmit={handleAuth}>
             <h1>Sign in</h1>
             <SocialContainer>
-              <div className="social"><Icon name="facebook f" /></div>
-              <div className="social"><Icon name="google plus g" /></div>
-              <div className="social"><Icon name="linkedin in" /></div>
+              <div className="social" onClick={() => handleProviderLogin('facebook')}><Icon name="facebook f" /></div>
+              <div className="social" onClick={() => handleProviderLogin('google')}><Icon name="google plus g" /></div>
+              <div className="social" onClick={() => handleProviderLogin('linkedin')}><Icon name="linkedin in" /></div>
             </SocialContainer>
             <span>or use your account</span>
             <StyledInput 
