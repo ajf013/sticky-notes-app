@@ -9,17 +9,41 @@ body {
 
 code, .ql-editor code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-	background-color: rgba(0, 0, 0, 0.05);
+	background-color: #e0f2f1; /* Vibrant Light Teal */
 	padding: 0.2em 0.4em;
 	border-radius: 4px;
 	font-size: 0.9em;
-	border: 1px solid rgba(0, 0, 0, 0.05);
+	border: 1px solid rgba(0, 150, 136, 0.2);
+	color: #00796b;
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
 }
 
 .dark-mode code, .dark-mode .ql-editor code {
-	background-color: rgba(255, 255, 255, 0.1);
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	color: #e6e6e6;
+	background-color: #004d40; /* Deep Vibrant Teal */
+	border: 1px solid rgba(0, 150, 136, 0.3);
+	color: #80cbc4;
+}
+
+.copy-inline-btn {
+	cursor: pointer;
+	font-size: 0.8em;
+	opacity: 0.6;
+	transition: all 0.2s ease;
+	user-select: none;
+	display: inline-flex;
+}
+
+.copy-inline-btn:hover {
+	opacity: 1;
+	transform: scale(1.2);
+}
+
+.copy-inline-btn.copied {
+	color: #4CAF50;
+	opacity: 1;
 }
 
 .header {

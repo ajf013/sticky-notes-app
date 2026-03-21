@@ -18,10 +18,9 @@ const NoteContent = ({ html, style }) => {
     useEffect(() => {
         if (!contentRef.current) return;
 
+        // 1. Handle Block Code (pre.ql-syntax)
         const codeBlocks = contentRef.current.querySelectorAll('pre.ql-syntax');
-        
         codeBlocks.forEach((block) => {
-            // Check if button already exists to avoid duplicates
             if (block.querySelector('.copy-code-btn')) return;
 
             const button = document.createElement('button');
@@ -31,7 +30,8 @@ const NoteContent = ({ html, style }) => {
             
             button.onclick = (e) => {
                 e.stopPropagation();
-                const code = block.innerText.replace('Copy', '').trim();
+                // Get text but remove the button text if it somehow gets included
+                const code = block.innerText.replace('Copy', '').replace('Copied!', '').trim();
                 navigator.clipboard.writeText(code)
                     .then(() => {
                         button.innerHTML = 'Copied!';
@@ -49,6 +49,35 @@ const NoteContent = ({ html, style }) => {
 
             block.style.position = 'relative';
             block.appendChild(button);
+        });
+
+        // 2. Handle Inline Code (code tags not inside pre)
+        const inlineCodes = contentRef.current.querySelectorAll(':not(pre) > code');
+        inlineCodes.forEach((codeTag) => {
+            if (codeTag.querySelector('.copy-inline-btn')) return;
+
+            const iconSpan = document.createElement('span');
+            iconSpan.className = 'copy-inline-btn';
+            iconSpan.title = 'Copy code';
+            iconSpan.innerHTML = '📋'; // Small clipboard emoji or icon
+            
+            iconSpan.onclick = (e) => {
+                e.stopPropagation();
+                // Copy ONLY the text before the icon
+                const codeText = codeTag.innerText.replace('📋', '').replace('✓', '').trim();
+                navigator.clipboard.writeText(codeText)
+                    .then(() => {
+                        const originalHtml = iconSpan.innerHTML;
+                        iconSpan.innerHTML = '✓'; // Change to checkmark
+                        iconSpan.classList.add('copied');
+                        setTimeout(() => {
+                            iconSpan.innerHTML = originalHtml;
+                            iconSpan.classList.remove('copied');
+                        }, 1500);
+                    });
+            };
+
+            codeTag.appendChild(iconSpan);
         });
     }, [html]);
 
