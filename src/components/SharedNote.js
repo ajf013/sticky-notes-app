@@ -126,7 +126,7 @@ const SharedNote = () => {
     const modules = {
         toolbar: [
             [{ 'header': [1, 2, false] }],
-            ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
+            ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code', 'code-block'],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
             ['link', 'image'],
             ['clean']
@@ -135,7 +135,7 @@ const SharedNote = () => {
 
     const formats = [
         'header',
-        'bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block',
+        'bold', 'italic', 'underline', 'strike', 'blockquote', 'code', 'code-block',
         'list', 'bullet', 'indent',
         'link', 'image'
     ];
