@@ -1,6 +1,6 @@
 # Notes App | React
 
-A modern, feature-rich Notes Application built with React.js and Supabase.
+A modern, high-performance, and feature-rich Notes Application built with React.js and Supabase. Designed with a "Premium" aesthetic and seamless cross-device synchronization.
 
 ## 🌐 Live Demo
 
@@ -9,22 +9,28 @@ A modern, feature-rich Notes Application built with React.js and Supabase.
 
 ## ✨ Features
 
-- **Rich Text Editor**: Write notes with **Bold**, *Italic*, <u>Underline</u>, Lists, Links, and Images using React-Quill.
-- **Supabase Integration**: Persistent storage for notes and user authentication using Supabase.
-- **Pinned Notes**: Keep your most important notes at the top of the list for quick access.
-- **Secure Sharing**: Share notes via **View** or **Edit** access links.
-- **Edit Access Requests**: Viewers can request edit access, and authors can approve/deny requests from a dedicated dashboard.
-- **Localized Timestamps**: Note dates and times are automatically converted to your local device's timezone.
-- **Social Integration**: One-click sharing to WhatsApp, Facebook, Instagram, and other platforms.
-- **Theming**: Beautiful Dark and Light modes with a premium Violet/Plum color palette.
-- **Responsive Design**: Fully optimized for Desktop, Tablet, and Mobile devices.
-- **Real-time Search**: Instant search by Title or Content.
-
-## 📸 Screenshots
-
-### Dashboard (Violet Theme)
-
-### Share Options & Access Control
+- **Instant Real-time Sync**: Seamless cross-device synchronization using Supabase Realtime. Edits on one device are instantly reflected on all others without refreshing.
+- **Premium UI/UX**: A stunning "Mid-range Violet" theme with vibrant gradients, glassmorphism headers, and smooth animations (AOS).
+- **Advanced Auth System**: 
+  - Modern sliding Login/Signup interface.
+  - Email-only authentication for simplicity and security.
+  - **Security Lockout**: Automatic local lockout after 3 failed login attempts, requiring a password reset.
+- **PWA Optimized**: 
+  - "Add to Home Screen" support.
+  - **Smart Update**: A dedicated "Sync & Update" button in the header to check for new app versions and refresh assets (perfect for iOS Safari).
+  - Automatic update detection and prompt.
+- **Rich Text & Code Support**: 
+  - Full-featured editor using React-Quill.
+  - **Global Code Copy**: "Copy" buttons injected into all code blocks.
+  - **Inline Code**: Support for selective word code blocks with vibrant teal styling and hover-to-copy icons.
+- **Note Management**:
+  - **Pinned Notes**: Keep important notes at the top.
+  - **Title Edit Icon**: Quick-access edit icon next to titles for faster editing.
+  - **Localized Timestamps**: Dates automatically localized to the user's device.
+- **Secure Sharing**: 
+  - Share via View or Edit access links.
+  - Access request dashboard for authors to approve/deny collaborators.
+- **Responsive Design**: Optimized from 4K desktops down to mobile devices with custom sliding transitions.
 
 ## 📂 Project Structure
 
@@ -32,69 +38,72 @@ A modern, feature-rich Notes Application built with React.js and Supabase.
 sticky-notes-app/
 ├── public/                # Static assets and HTML template
 │   ├── index.html         # Main entry point
-│   ├── _redirects         # Netlify routing configuration
+│   ├── manifest.json      # PWA Configuration
 │   └── ...
 ├── src/                   # Application source code
 │   ├── components/        # React components
-│   │   ├── Footer/        # Footer component
-│   │   ├── AddNote.js     # New note creation component
-│   │   ├── Auth.js        # Authentication component (Supabase)
-│   │   ├── Header.js      # Global Header with user info
-│   │   ├── Note.js        # Individual Note card component
-│   │   ├── NotesList.js   # List container for notes
-│   │   ├── PendingRequests.js # Dashboard for edit requests
-│   │   ├── Search.js      # Live search functionality
-│   │   ├── SharedNote.js  # Dedicated view for shared note links
-│   │   ├── SplashScreen.js # Initial loading screen
-│   │   └── Toggle.js      # Dark/Light mode toggle
+│   │   ├── Footer/        # Global Footer
+│   │   ├── AddNote.js     # Note creation with Quill integration
+│   │   ├── Auth.js        # Redesigned sliding Auth UI
+│   │   ├── Header.js      # Header with User Info & Sync Button
+│   │   ├── Note.js        # Note card with Title Edit icon
+│   │   ├── NoteContent.js # Dynamic renderer for copy buttons & inline code
+│   │   ├── NotesList.js   # Main list with Premium Loader
+│   │   ├── PendingRequests.js # Edit request management
+│   │   ├── SharedNote.js  # Public/Shared note view
+│   │   ├── SplashScreen.js # Animated entry pulse
+│   │   └── Toggle.js      # Theme switcher
 │   ├── styles/            # CSS and Styled Components
-│   │   ├── globalStyles.js # Global theme and styling
-│   │   └── useDarkMode.js  # Dark mode state management hook
-│   ├── App.js             # Main application logic and routing
-│   ├── index.css          # Main styles (Violet theme)
-│   ├── index.js           # React DOM entry point
-│   ├── supabaseClient.js  # Supabase initialization
+│   │   ├── globalStyles.js # Dynamic 4K Backgrounds & Theme logic
+│   │   └── useDarkMode.js  # Dark mode state management
+│   ├── App.js             # Real-time data pipeline & Routing
+│   ├── index.css          # Core design system & Vibrant themes
+│   ├── index.js           # PWA update registration logic
+│   ├── supabaseClient.js  # v1 Supabase initialization
 │   └── ...
-├── package.json           # Project dependencies and scripts
+├── package.json           # Dependencies (React 17, Supabase v1)
 └── README.md              # Project documentation
 ```
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React.js
-- **Backend/Database**: Supabase
-- **Styling**: Styled Components, Semantic UI, CSS3
-- **Editor**: React-Quill
-- **Icons**: React-Icons (SVG)
+- **Frontend**: React.js (v17)
+- **Backend/Database**: Supabase (Realtime, Auth, Storage)
+- **Styling**: Styled Components, Semantic UI, Vanilla CSS3
+- **Rich Text**: React-Quill & DOMPurify (XSS Protection)
+- **Animations**: AOS (Animate on Scroll)
+- **Icons**: React-Icons & Semantic UI Icons
 - **Deployment**: Netlify
 
 ## 📦 Installation
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/ajf013/notes-app-react-main.git
+   git clone https://github.com/ajf013/sticky-notes-app.git
    ```
 2. Install dependencies:
    ```bash
    npm install
    ```
-3. Run the app:
+3. Set up environment variables:
+   Create a `.env` file with:
+   ```text
+   REACT_APP_SUPABASE_URL=your_url
+   REACT_APP_SUPABASE_ANON_KEY=your_key
+   ```
+4. Run the app:
    ```bash
    npm start
    ```
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📄 License
 
 This project is licensed under the MIT License.
 
-## You can reach out 😊😊
-Feel free to contact me about any issues or suggestions!
+## Contact & Contributions 🙋‍♂️
+
+Feel free to reach out for suggestions or contributions!
 
 [![Linkedin Badge](https://img.shields.io/badge/linkedin-%230077B5.svg?&style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ajf013-francis-cruz/)
-[![Mail Badge](https://img.shields.io/badge/email-c14438?style=for-the-badge&logo=Gmail&logoColor=white&link=mailto:cruzmma2021@gmail.com)](mailto:cruzmma2021@gmail.com)
+[![Mail Badge](https://img.shields.io/badge/email-c14438?style=for-the-badge&logo=Gmail&logoColor=white)](mailto:cruzmma2021@gmail.com)
 [![Github Badge](https://img.shields.io/badge/github-333?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ajf013)
-
