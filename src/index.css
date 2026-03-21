@@ -59,8 +59,14 @@ code, .ql-editor code {
 }
 
 .dark-mode .note.new {
-	background-color: #b7b7d4;
-	/* Darker lavender for dark mode */
+	background-color: #6A1B9A;
+	/* Deep Vibrant Purple for dark mode */
+	border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .note {
+	background-color: #4B0082; /* Indigo/Deep Purple for dark mode */
+	border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .container {
@@ -92,21 +98,21 @@ code, .ql-editor code {
 }
 
 .note.new {
-	background-color: #e6e6fa;
-	/* Lavender */
-	border: 1px solid rgba(0, 0, 0, 0.05);
+	background-color: #B28DFF;
+	/* A lighter, vibrant purple for the new note area */
+	border: 1px solid rgba(255, 255, 255, 0.2);
 	min-height: 350px;
-	color: #000;
+	color: #ffffff;
 }
 
 .note.new input,
 .note.new .ql-editor {
-	color: #000 !important;
+	color: #ffffff !important;
 }
 
 .note.new input::placeholder,
 .note.new .ql-editor.ql-blank::before {
-	color: rgba(0, 0, 0, 0.6) !important;
+	color: rgba(255, 255, 255, 0.7) !important;
 	font-style: normal;
 }
 
@@ -133,9 +139,9 @@ textarea:focus {
 }
 
 .note {
-	background-color: #dda0dd;
-	/* Plum/Violet */
-	border-radius: 10px;
+	background-color: #8A2BE2;
+	/* Mid-range Violet/Purple */
+	border-radius: 12px;
 	padding: 1rem;
 	min-height: 250px;
 	display: flex;
@@ -144,6 +150,7 @@ textarea:focus {
 	white-space: pre-wrap;
 	transition: transform 0.3s ease, box-shadow 0.3s ease;
 	animation: fadeIn 0.5s ease-in-out;
+	color: #ffffff; /* Default text color for the note content */
 }
 
 .note.new {
@@ -284,8 +291,9 @@ textarea:focus {
 .note-title {
 	margin: 0 !important;
 	flex: 1;
-	font-size: 1.1em;
-	font-weight: bold;
+	font-size: 1.2em;
+	font-weight: 800;
+	color: #ffffff;
 }
 
 .title-edit-icon {
