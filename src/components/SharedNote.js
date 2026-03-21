@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import DOMPurify from 'dompurify';
 import NoteContent from './NoteContent';
 import { Container, Segment, Button, Form, Message } from 'semantic-ui-react';
 import ReactQuill from 'react-quill';
@@ -56,16 +55,6 @@ const SharedNote = () => {
         }
     }, [id]);
 
-    const createMarkup = (html) => {
-        return {
-            __html: DOMPurify.sanitize(html, {
-                ADD_CLASSES: {
-                    '*': ['ql-syntax', 'ql-clipboard']
-                },
-                ADD_ATTR: ['spellcheck', 'data-language', 'class']
-            })
-        }
-    }
 
     const checkAccess = async () => {
         if (!email.trim() || !email.includes('@')) {

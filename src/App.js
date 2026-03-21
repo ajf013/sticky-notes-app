@@ -13,7 +13,6 @@ import Footer from './components/Footer/Footer';
 import { Modal, Button } from 'semantic-ui-react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import DOMPurify from 'dompurify';
 import SplashScreen from './components/SplashScreen';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import SharedNote from './components/SharedNote';

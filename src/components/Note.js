@@ -1,6 +1,5 @@
 import { MdDeleteForever, MdShare, MdEdit } from 'react-icons/md';
 import { AiFillPushpin, AiOutlinePushpin } from 'react-icons/ai';
-import DOMPurify from 'dompurify';
 import NoteContent from './NoteContent';
 import { Button } from 'semantic-ui-react';
 import { useState, useRef, useEffect } from 'react';
@@ -15,19 +14,6 @@ const Note = ({ id, title, text, date, isPinned, handlePinNote, handleDeleteNote
 	const [editTitle, setEditTitle] = useState(title || '');
 	const [editText, setEditText] = useState(text || '');
 	const shareRef = useRef(null);
-
-	const createMarkup = (html) => {
-		return {
-			__html: DOMPurify.sanitize(html, {
-				ADD_CLASSES: {
-					'*': ['ql-syntax', 'ql-clipboard']
-				},
-				ADD_ATTR: ['spellcheck', 'data-language', 'class']
-			})
-		}
-	}
-
-	// Unused since we use NoteContent now, but kept for legacy if needed or just remove
 
 	const shareUrl = `https://notes.fcruz.org/note/${id}?access=${access}`;
 
