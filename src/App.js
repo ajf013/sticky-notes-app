@@ -36,8 +36,8 @@ const App = () => {
 	useEffect(() => {
 		AOS.init({ duration: 2000 });
 
-		const session = supabase.auth.session();
-		setSession(session);
+		const currentSession = supabase.auth.session();
+		setSession(currentSession);
 
 		const { data: authListener } = supabase.auth.onAuthStateChange(
 			(_event, session) => {
@@ -45,10 +45,33 @@ const App = () => {
 			}
 		);
 
+		// Real-time synchronization for notes
+		let channel;
+		if (currentSession?.user?.id) {
+			channel = supabase
+				.channel('public:notes')
+				.on(
+					'postgres_changes',
+					{ 
+						event: '*', 
+						schema: 'public', 
+						table: 'notes', 
+						filter: `user_id=eq.${currentSession.user.id}` 
+					},
+					() => {
+						fetchNotes();
+					}
+				)
+				.subscribe();
+		}
+
 		return () => {
 			authListener.unsubscribe();
+			if (channel) {
+				supabase.removeChannel(channel);
+			}
 		};
-	}, []);
+	}, [fetchNotes]);
 
 	const fetchNotes = useCallback(async () => {
 		try {
@@ -192,7 +215,7 @@ const App = () => {
 									<Auth />
 								) : (
 									<>
-										<Header session={session} />
+										<Header session={session} onRefresh={fetchNotes} />
 										<Search handleSearchNote={setSearchText} />
 										<PendingRequests session={session} />
 										<NotesList
