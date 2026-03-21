@@ -1,6 +1,7 @@
 import { MdDeleteForever, MdShare, MdEdit } from 'react-icons/md';
 import { AiFillPushpin, AiOutlinePushpin } from 'react-icons/ai';
 import DOMPurify from 'dompurify';
+import NoteContent from './NoteContent';
 import { Button } from 'semantic-ui-react';
 import { useState, useRef, useEffect } from 'react';
 import { FaWhatsapp, FaFacebook, FaInstagram, FaShareAlt, FaCopy } from 'react-icons/fa';
@@ -25,6 +26,8 @@ const Note = ({ id, title, text, date, isPinned, handlePinNote, handleDeleteNote
 			})
 		}
 	}
+
+	// Unused since we use NoteContent now, but kept for legacy if needed or just remove
 
 	const shareUrl = `https://notes.fcruz.org/note/${id}?access=${access}`;
 
@@ -185,7 +188,7 @@ const Note = ({ id, title, text, date, isPinned, handlePinNote, handleDeleteNote
 	return (
 		<div className='note' onClick={() => handleReadNote({ id, title, text, date })} style={{ cursor: 'pointer', border: isPinned ? '2px solid #ffd700' : 'none' }} data-aos='fade-up'>
 			{title && <h3 style={{ marginBottom: '10px', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '5px' }}>{title}</h3>}
-			<div dangerouslySetInnerHTML={createMarkup(text)} style={{ flex: 1, overflow: 'hidden' }} />
+			<NoteContent html={text} style={{ flex: 1, overflow: 'hidden' }} />
 			<div className='note-footer'>
 				<small>{date}</small>
 				<div style={{ display: 'flex', gap: '10px', alignItems: 'center', position: 'relative' }} ref={shareRef}>

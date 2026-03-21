@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from './supabaseClient';
 import Auth from './components/Auth';
+import NoteContent from './components/NoteContent';
 import NotesList from './components/NotesList';
 import Search from './components/Search';
 import { Toggle } from './components/Toggle';
@@ -225,13 +226,8 @@ const App = () => {
 											<Modal.Content scrolling>
 												<Modal.Description style={{ color: 'black' }}>
 													{selectedNote?.title && <h3 style={{ marginBottom: '1rem', color: 'black' }}>{selectedNote.title}</h3>}
-													<div
-														dangerouslySetInnerHTML={{
-															__html: DOMPurify.sanitize(selectedNote?.text, {
-																ADD_CLASSES: { '*': ['ql-syntax', 'ql-clipboard'] },
-																ADD_ATTR: ['spellcheck', 'data-language', 'class']
-															})
-														}}
+													<NoteContent
+														html={selectedNote?.text}
 														style={{ fontSize: '1.2rem', lineHeight: '1.5', color: 'black' }}
 													/>
 													<p style={{ color: 'gray', marginTop: '1rem' }}>

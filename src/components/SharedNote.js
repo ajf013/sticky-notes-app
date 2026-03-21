@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import DOMPurify from 'dompurify';
+import NoteContent from './NoteContent';
 import { Container, Segment, Button, Form, Message } from 'semantic-ui-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -277,8 +278,8 @@ const SharedNote = () => {
                         </div>
                     </div>
                 ) : (
-                    <div
-                        dangerouslySetInnerHTML={createMarkup(note.text)}
+                    <NoteContent
+                        html={note.text}
                         style={{
                             fontSize: '1.1rem',
                             lineHeight: '1.6',
