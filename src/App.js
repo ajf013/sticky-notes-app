@@ -88,30 +88,21 @@ const App = () => {
 			}
 		);
 
-		// Real-time synchronization for notes
-		let channel;
+		// Real-time synchronization for notes (Supabase v1 syntax)
+		let subscription;
 		if (currentSession?.user?.id) {
-			channel = supabase
-				.channel('public:notes')
-				.on(
-					'postgres_changes',
-					{ 
-						event: '*', 
-						schema: 'public', 
-						table: 'notes', 
-						filter: `user_id=eq.${currentSession.user.id}` 
-					},
-					() => {
-						fetchNotes();
-					}
-				)
+			subscription = supabase
+				.from('notes')
+				.on('*', () => {
+					fetchNotes();
+				})
 				.subscribe();
 		}
 
 		return () => {
 			authListener.unsubscribe();
-			if (channel) {
-				supabase.removeChannel(channel);
+			if (subscription) {
+				supabase.removeSubscription(subscription);
 			}
 		};
 	}, [fetchNotes]);
