@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient';
 import NoteContent from './NoteContent';
 import { Container, Segment, Button, Form, Message } from 'semantic-ui-react';
 import ReactQuill from 'react-quill';
+import { MdEdit } from 'react-icons/md';
 import 'react-quill/dist/quill.snow.css';
 
 const useQuery = () => {
@@ -177,7 +178,20 @@ const SharedNote = () => {
         <Container style={{ marginTop: '2rem', marginBottom: '2rem' }}>
             <Segment style={{ padding: '2rem', color: 'black' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid #eee', paddingBottom: '1rem' }}>
-                    <h1 style={{ margin: 0, color: 'black' }}>{note.title || 'Untitled Note'}</h1>
+                    <div className="note-title-container" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <h1 style={{ margin: 0, color: 'black' }}>{note.title || 'Untitled Note'}</h1>
+                        {urlAccess === 'edit' && !isEditing && (
+                            <MdEdit
+                                className="title-edit-icon"
+                                onClick={() => {
+                                    setEditText(note.text);
+                                    setIsEditing(true);
+                                }}
+                                style={{ cursor: 'pointer', opacity: 0.5 }}
+                                title="Edit Note"
+                            />
+                        )}
+                    </div>
                     <div>
                         <span style={{ color: '#666', marginRight: '1rem' }}>{note.date}</span>
                         <Button basic size="small" onClick={() => window.location.href = '/'}>App Home</Button>

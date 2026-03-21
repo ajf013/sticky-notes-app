@@ -269,3 +269,44 @@ textarea:focus {
 	border: 1px solid #ccc;
 	padding: 5px;
 }
+
+/* Note Title Edit Styling */
+.note-title-container {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 10px;
+	border-bottom: 1px solid rgba(0,0,0,0.1);
+	padding-bottom: 5px;
+	width: 100%;
+}
+
+.note-title {
+	margin: 0 !important;
+	flex: 1;
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
+.title-edit-icon {
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.3s ease, transform 0.2s ease;
+	color: #6200ee;
+	padding: 4px;
+	margin-left: 10px;
+}
+
+.note:hover .title-edit-icon,
+.note-title-container:hover .title-edit-icon {
+	opacity: 0.6;
+}
+
+.title-edit-icon:hover {
+	opacity: 1 !important;
+	transform: scale(1.2);
+}
+
+.dark-mode .title-edit-icon {
+	color: #bb86fc;
+}

@@ -173,7 +173,21 @@ const Note = ({ id, title, text, date, isPinned, handlePinNote, handleDeleteNote
 
 	return (
 		<div className='note' onClick={() => handleReadNote({ id, title, text, date })} style={{ cursor: 'pointer', border: isPinned ? '2px solid #ffd700' : 'none' }} data-aos='fade-up'>
-			{title && <h3 style={{ marginBottom: '10px', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '5px' }}>{title}</h3>}
+			{title && (
+				<div className="note-title-container">
+					<h3 className="note-title">{title}</h3>
+					<MdEdit
+						className="title-edit-icon"
+						onClick={(e) => {
+							e.stopPropagation();
+							setEditTitle(title || '');
+							setEditText(text || '');
+							setIsEditing(true);
+						}}
+						title="Edit Title"
+					/>
+				</div>
+			)}
 			<NoteContent html={text} style={{ flex: 1, overflow: 'hidden' }} />
 			<div className='note-footer'>
 				<small>{date}</small>
